@@ -1,0 +1,20 @@
+Return-Path: <john.smith@example.com>
+Received: by 10.107.11.155 with HTTP; Fri, 30 Dec 2016 03:27:23 -0800 (PST)
+From: John Smith <john.smith@example.com>
+Date: Fri, 30 Dec 2016 11:27:23 +0000
+Message-ID: <CABqzkqE2oWUF2pDMm+wKPPr_RSaGa-2PMJiH8VS=Wcc14n9umg@mail.gmail.com>
+Subject: Testing for event format
+To: info@example.com
+Content-Type: multipart/alternative; boundary=001a1143f26a8edd040544de7db7
+
+--001a1143f26a8edd040544de7db7
+Content-Type: text/plain; charset=UTF-8
+
+Testing, please ignore.
+
+--001a1143f26a8edd040544de7db7
+Content-Type: text/html; charset=UTF-8
+
+<div dir="ltr">Testing, please ignore.</div>
+
+--001a1143f26a8edd040544de7db7--
