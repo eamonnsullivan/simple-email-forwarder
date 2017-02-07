@@ -1,7 +1,7 @@
 #!/bin/sh
 
 profile='home'
-function_name='svpEmailHandler'
+function_name='exampleEmailHandler'
 zip_file='SimpleForwarder.zip'
 code_file='SimpleForwarder.py'
 
