@@ -17,7 +17,7 @@ The software was inspired by and largely follows the approach of @arithmetric's 
 
 SES will only send email from a "verified" address, one that is at a domain you control or one that you have set up in advance (by clicking a link sent to that email address). Since this software is designed to forward email from arbitrary senders, we can't just put the sender's email into the "From:" header. Instead, we add a "Reply-To:" header that points to the sender's original address. We then rewrite the "From:" address, either with an address you specify (in fromEmail) or we take the first To: address (which, by definition, is verified). 
 
-This will be easier to understand with an example: If `Jane Doe <janedoe@example.com>` sends an email to `info@yourdomain.com` and we've configured `user1@yourdomain.com` to accept "info" email, SimpleForwarder will rewrite the header to something like before sending:
+This will be easier to understand with an example: If `Jane Doe <janedoe@example.com>` sends an email to `info@yourdomain.com` and we've configured `user1@yourdomain.com` to accept "info" email, SimpleForwarder will rewrite the header to something like this before sending:
 
 ```
 From: "Jane Doe at janedoe@example.com <info@yourdomain.com>"
@@ -27,7 +27,7 @@ Reply-To: <janedoe@example.com>
 
 If your email doesn't handle the Reply-To correctly (Gmail appears to ignore this, for example), you might need to copy & paste the email from the To: section. This is why the software includes the original address in the text part of the From: header. In most email software, this will be displayed as `Jane Doe at janedoe@example.com`, making it easy to see and reply to the sender, even if your software ignores the Reply-To: header.
 
-Also, SES won't *send* to any address that isn't verified while in the "SandBox". That might be fine if the addresses you are sending to are your own or family members, but if you need to be able to send to arbitrary addresses, you'll need to leave break out of the sandbox. The main [Amazon SES documentation](http://docs.aws.amazon.com/ses/latest/DeveloperGuide/Welcome.html) covers this in great detail. You basically fill out a form and promise not to spam.
+Also, SES won't *send* to any address that isn't verified while in the "SandBox". That might be fine if the addresses you are sending to are your own or family members, but if you need to be able to send to arbitrary addresses, you'll need to break out of the sandbox. The main [Amazon SES documentation](http://docs.aws.amazon.com/ses/latest/DeveloperGuide/Welcome.html) covers this in great detail. You basically fill out a form and promise not to spam.
 
 ## Setup
 
