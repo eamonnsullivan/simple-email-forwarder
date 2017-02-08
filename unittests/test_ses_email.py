@@ -26,6 +26,26 @@ Reply-To: <test@example.com>\r
 Test message.\r
 """
 
+EMAIL_WITH_BORKED_TO = """Return-Path: <someone@someplace.com>\r
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;\r
+        d=gmail.com; s=20161025;\r
+        h=mime-version:from:date:message-id:subject:to;\r
+        bh=4c9vZm70ItvTkbMF9HikO6KKWJl5M95+W6HmkZxAYA0=;\r
+        b=LUsCaJ4FEtgn0IYraRp5+iB2SDwwJ1wcTrgzdIyBqpYJNSaA0X0L6vweduQ7szGID9\r
+         1vzYdqYgjoiyusVTEaNlZZq1Y0IseIUdlFhrR8oyYsSPgWDvSb5fHcXZzQrw0MKojakm\r
+         1uQsHjiGYyLJZiDbg37g2O2FOah5imBRKsCd+xCy7bpFdhS3tuVtxUOZ1W0uXRd2PKB2\r
+         DlLgfMtcpliGskJp4G6Kvv+BfSI835fULU0gITzL5wIt6YheL9Qu5ZKfQX94wpIRI5uj\r
+         3o+jmMMCNWQWw/5Kt/2Y6Te4zHOS2cqoaZdlzCwokN3cX6fmfGXiuC6MJO/LNN3/cPH5\r
+         SPIA==\r
+From: Some One <someone@someplace.com>\r
+Subject: Testing for event format\r
+To: "Some One at someone@someplace.com"\r
+            <info@example.com>\r
+Reply-To: <test@example.com>\r
+\r
+Test message.\r
+"""
+
 class testSESEmail(unittest.TestCase):
 
     def setUp(self):
@@ -65,6 +85,15 @@ class testSESEmail(unittest.TestCase):
         expected = copy.deepcopy(TEST_SEND_EMAIL)
         expected = expected.replace("To: ", "Three: ")
         expected = expected.replace("Reply-Three: ", "Reply-To: ")
+        self.assertEqual(expected, testObj.email())
+
+    def test_borked_to_line(self):
+        email = copy.deepcopy(EMAIL_WITH_BORKED_TO)
+        testObj = SESEmail(email, self._event,
+                           self._sender, self._config,
+                           self._logger)
+        expected = copy.deepcopy(TEST_SEND_EMAIL)
+        expected = expected.replace("To: info@example.com", 'To: "Some One at someone@someplace.com"\r\n            <info@example.com>')
         self.assertEqual(expected, testObj.email())
         
 

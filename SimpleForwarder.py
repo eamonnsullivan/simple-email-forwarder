@@ -244,13 +244,7 @@ class SESEmail(object):
             reply_to = 'Reply-To: ' + from_line[0].replace('From: ', '')
             self._logger.info("Adding Reply-To to the header: %s",
                               reply_to)
-            # insert it just below the To: line.
-            to_line = self._get_header_section('To: ')
-            if len(to_line) > 0:
-                index = self._header.index(to_line[0])
-                self._header.insert(index + 1, reply_to)
-            else:
-                self._header.append(reply_to)
+            self._header.append(reply_to)
         else:
             self._logger.error("Unable to extract From address.")
 
