@@ -20,7 +20,7 @@ SES will only send email from a "verified" address, one that is at a domain you 
 This will be easier to understand with an example: If `Jane Doe <janedoe@example.com>` sends an email to `info@yourdomain.com` and we've configured `user1@yourdomain.com` to accept "info" email, SimpleForwarder will rewrite the header to something like this before sending:
 
 ```
-From: "Jane Doe at janedoe@example.com <info@yourdomain.com>"
+From: "Jane Doe at janedoe@example.com" <info@yourdomain.com>
 To: <user1@yourdomain.com>
 Reply-To: <janedoe@example.com>
 ```
