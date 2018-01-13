@@ -6,6 +6,7 @@ from behave import *
 from SimpleForwarder import *
 from mock import Mock, MagicMock
 from StringIO import StringIO
+import copy
 
 with open('emailBody.txt', 'r') as fp:
     FULL_TEST_EMAIL = fp.read()
@@ -53,6 +54,106 @@ TEST_EVENT = {
                 },
                 "receipt": {
                     "recipients": [],
+                    "spamVerdict": {
+                        "status": "PASS"
+                    },
+                    "dkimVerdict": {
+                        "status": "PASS"
+                    },
+                    "action": {
+                        "invocationType": "Event",
+                        "type": "Lambda",
+                        "functionArn": "arn:aws:lambda:eu-west-1:995361647121:function:svpEmailHandler"
+                    },
+                    "processingTimeMillis": 1298,
+                    "spfVerdict": {
+                        "status": "PASS"
+                    },
+                    "virusVerdict": {
+                        "status": "PASS"
+                    }
+                }
+            }
+        }
+    ]
+}
+
+TEST_EVENT_SPAM = {
+    "Records": [
+        {
+            "eventSource": "aws:ses",
+            "eventVersion": "1.0",
+            "ses": {
+                "mail": {
+                    "source": "someone@somedomain.com",
+                    "messageId": "3bnsm1c2akm1gded3speted0hpnglijt74jbd201",
+                    "destination": [
+                        "info@example.com"
+                    ],
+                    "headers": [],
+                    "commonHeaders": {}
+                },
+                "receipt": {
+                    "recipients": [],
+                    "spamVerdict": {
+                        "status": "FAIL"
+                    },
+                    "dkimVerdict": {
+                        "status": "GRAY"
+                    },
+                    "action": {
+                        "invocationType": "Event",
+                        "type": "Lambda",
+                        "functionArn": "arn:aws:lambda:eu-west-1:995361647121:function:svpEmailHandler"
+                    },
+                    "processingTimeMillis": 1298,
+                    "spfVerdict": {
+                        "status": "GRAY"
+                    },
+                    "virusVerdict": {
+                        "status": "PASS"
+                    }
+                }
+            }
+        }
+    ]
+}
+
+TEST_EVENT_VIRUS = {
+    "Records": [
+        {
+            "eventSource": "aws:ses",
+            "eventVersion": "1.0",
+            "ses": {
+                "mail": {
+                    "source": "someone@somedomain.com",
+                    "messageId": "3bnsm1c2akm1gded3speted0hpnglijt74jbd201",
+                    "destination": [
+                        "info@example.com"
+                    ],
+                    "headers": [],
+                    "commonHeaders": {}
+                },
+                "receipt": {
+                    "recipients": [],
+                    "spamVerdict": {
+                        "status": "PASS"
+                    },
+                    "dkimVerdict": {
+                        "status": "PASS"
+                    },
+                    "action": {
+                        "invocationType": "Event",
+                        "type": "Lambda",
+                        "functionArn": "arn:aws:lambda:eu-west-1:995361647121:function:svpEmailHandler"
+                    },
+                    "processingTimeMillis": 1298,
+                    "spfVerdict": {
+                        "status": "PASS"
+                    },
+                    "virusVerdict": {
+                        "status": "FAIL"
+                    }
                 }
             }
         }
@@ -173,6 +274,7 @@ def step_impl(context, text):
 
 @given(u'no emails have been configured for the default domain address')
 def step_impl(context):
+    SES_MOCK.reset_mock()
     TEST_CONFIG['forwardMapping']['example.com'] = []
 
 
@@ -183,10 +285,9 @@ def step_impl(context):
     event['Records'][0]['ses']['receipt']['recipients'] = addr
     lambda_handler(event, {}, SES_MOCK, S3_MOCK, config=TEST_CONFIG)
 
-
 @then(u'the email is dropped and no action is taken')
 def step_impl(context):
-    if SES_MOCK.called:
+    if SES_MOCK.send_raw_email.called:
         raise TestFailure('The send function was called.')
 
 
@@ -257,5 +358,16 @@ def step_impl(context):
                 raw_message
             ))
 
+@when(u'an email is sent to the {text} address with a header indicating spam')
+def step_impl(context, text):
+    event = TEST_EVENT_SPAM
+    address = [text.replace('"', '') + '@example.com']
+    event['Records'][0]['ses']['receipt']['recipients'] = address
+    lambda_handler(event, {}, SES_MOCK, S3_MOCK, config=TEST_CONFIG)
 
-
+@when(u'an email is sent to the {text} address with a header indicating a virus')
+def step_impl(context, text):
+    event = TEST_EVENT_VIRUS
+    address = [text.replace('"', '') + '@example.com']
+    event['Records'][0]['ses']['receipt']['recipients'] = address
+    lambda_handler(event, {}, SES_MOCK, S3_MOCK, config=TEST_CONFIG)

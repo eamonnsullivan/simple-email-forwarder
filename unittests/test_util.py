@@ -14,7 +14,25 @@ TEST_EVENT = {
                     "commonHeaders": {}
                 },
                 "receipt": {
-                    "recipients": ['info@example.com', 'members@example.com']
+                    "recipients": ['info@example.com', 'members@example.com'],
+                    "spamVerdict": {
+                        "status": "PASS"
+                    },
+                    "dkimVerdict": {
+                        "status": "PASS"
+                    },
+                    "action": {
+                        "invocationType": "Event",
+                        "type": "Lambda",
+                        "functionArn": "arn:aws:lambda:eu-west-1:995361647121:function:svpEmailHandler"
+                    },
+                    "processingTimeMillis": 1298,
+                    "spfVerdict": {
+                        "status": "PASS"
+                    },
+                    "virusVerdict": {
+                        "status": "PASS"
+                    }
                 }
             }
         }

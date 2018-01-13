@@ -34,13 +34,19 @@ Feature: Forward emails sent to Amazon's SES
     Then the resulting email "From" header includes the configured address
     And the resulting email doesn't have a "Return-Path" header
 
-  Scenario: Email gets first "to" address if "from" is blank
+  Scenario: Email gets first "to" address if "fromEmail" is blank
     Given emails have been configured for the "info" address
     And the configuration doesn't specify a fromEmail
     When an email is sent to the "info" address
     Then the resulting email "From" header includes the first "to" address
     And the resulting email doesn't have a "Return-Path" header
-    
-    
-                
-              
+
+  Scenario: Email flagged as spam is dropped
+    Given emails have been configured for the "info" address
+    When an email is sent to the "info" address with a header indicating spam
+    Then the email is dropped and no action is taken
+
+  Scenario: Email flagged as containing a virus is dropped
+    Given emails have been configured for the "members" address
+    When an email is sent to the "members" address with a header indicating a virus
+    Then the email is dropped and no action is taken

@@ -60,6 +60,11 @@ def lambda_handler(event,
     LOGGER.info("Got event: %s", event)
     LOGGER.debug("Context: %s", context)
     event = SESEmailEvent(event)
+
+    if event.is_spam() or event.is_virus():
+        LOGGER.error("Skipping email because it failed virus/spam check")
+        return
+
     new_recipients = get_new_recipients(event.get_recipients(), config)
     if len(new_recipients) > 0:
         LOGGER.info("Rewriting original recipients %s to %s",
@@ -115,6 +120,18 @@ class SESEmailEvent(object):
     def get_recipients(self):
         """ Return just the recipients part of the event."""
         return self._event['Records'][0]['ses']['receipt']['recipients']
+
+    def is_spam(self):
+        """ Return whether this may be spam."""
+        evnt = self._event
+        stat = evnt['Records'][0]['ses']['receipt']['spamVerdict']['status']
+        return stat != "PASS"
+
+    def is_virus(self):
+        """ Return whether this may contain a virus."""
+        evnt = self._event
+        stat = evnt['Records'][0]['ses']['receipt']['virusVerdict']['status']
+        return stat != "PASS"
 
     def _validate_event(self):
         """ Ensure that we have the bits we need. """
